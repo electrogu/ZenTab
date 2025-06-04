@@ -1,0 +1,246 @@
+body {
+  font-family: sans-serif;
+  padding: 20px;
+  background: #f9f9f9;
+  margin: 0;
+  max-width: none;
+  width: 97%;
+}
+
+
+h1 {
+  text-align: center;
+}
+
+button#saveTabs {
+  display: block;
+  margin: 0 auto 20px auto;
+  padding: 10px 20px;
+  font-size: 16px;
+  background: #0078d7;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button#saveTabs:hover {
+  background: #005ea2;
+}
+
+.save-timestamp {
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 8px;
+  font-style: italic;
+}
+
+.group-separator {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 20px 0;
+}
+
+/* Tab item flex container */
+.tab-item {
+  display: flex;
+  align-items: center;
+  padding: 6px 0;
+  cursor: default;
+}
+
+/* Favicon left */
+.tab-favicon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  flex-shrink: 0;
+  padding-left: 3px;
+}
+
+/* Title grows, aligned left, with ellipsis */
+.tab-title {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: small;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Buttons: copy then delete, visible only on hover */
+.copy-btn,
+.delete-btn {
+  width: 16px;
+  height: 16px;
+  background: none;
+  border: none;
+  color: black;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 4px;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  line-height: 1;
+}
+
+.tab-item:hover .copy-btn,
+.tab-item:hover .delete-btn {
+  opacity: 1;
+}
+
+.copy-btn:hover,
+.delete-btn:hover {
+  color: #0078d7;
+}
+
+/* Dark theme base */
+body.dark-theme {
+  background: #32343d;
+  color: #e0e0e0;
+  max-width: none;
+  margin: 0;
+  width: 97%;
+  padding: 20px;
+  font-family: sans-serif;
+}
+
+/* Dark mode header */
+body.dark-theme h1 {
+  color: #ddd;
+}
+
+/* Dark mode save button */
+body.dark-theme button#saveTabs {
+  background: #444;
+  color: #ddd;
+}
+
+body.dark-theme button#saveTabs:hover {
+  background: #666;
+}
+
+/* Dark mode timestamp */
+body.dark-theme .save-timestamp {
+  color: #aaa;
+}
+
+/* Dark mode separator */
+body.dark-theme .group-separator {
+  border-top-color: #555;
+}
+
+/* Dark mode favicon */
+body.dark-theme .tab-favicon {
+  filter: brightness(0.8);
+}
+
+/* Dark mode tab title */
+body.dark-theme .tab-title {
+  color: #bbdefb;
+}
+
+body.dark-theme .tab-title:hover {
+  color: #90caf9;
+}
+
+/* Dark mode buttons */
+body.dark-theme .copy-btn,
+body.dark-theme .delete-btn {
+  color: #ddd;
+}
+
+body.dark-theme .copy-btn:hover,
+body.dark-theme .delete-btn:hover {
+  color: #90caf9;
+}
+
+.save-timestamp a {
+  font-size: 0.9em;
+  margin-left: 12px;
+  color: #0078d7;
+  cursor: pointer;
+  text-decoration: none !important;;
+}
+
+body.dark-theme .save-timestamp a {
+  color: #90caf9;
+  text-decoration: none !important;;
+}
+
+.save-timestamp {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* space between timestamp and the links */
+  font-style: italic;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+/* Style the action links */
+.action-link {
+  text-decoration: none !important; /* force remove underline */
+  color: #0078d7;
+  cursor: pointer;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 0.9em;
+  padding-left: 8px; /* small space from timestamp */
+  user-select: none;
+}
+
+.action-link:hover {
+  text-decoration: underline;
+  color: #005ea2;
+}
+
+/* Dark mode versions */
+body.dark-theme .save-timestamp {
+  color: #aaa;
+}
+
+body.dark-theme .action-link {
+  color: #90caf9;
+}
+
+body.dark-theme .action-link:hover {
+  color: #bbdefb;
+}
+
+.text-button {
+  background: none;
+  border: none;
+  color: #0078d7;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0;
+  font-family: inherit;
+  text-decoration: none;
+}
+
+.text-button:hover {
+  color: #005a9e;
+}
+
+#saveTabs {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 12px; /* slight space from title */
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #0078d7;
+  text-decoration: underline;
+  font-family: inherit;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+#saveTabs:hover {
+  color: #005a9e;
+  text-decoration: none;
+}
+
+
