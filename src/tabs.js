@@ -40,6 +40,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function renderSavedTabs() {
     const { savedGroups = [] } = await browser.storage.local.get("savedGroups");
+
+    // Migration: set default name for groups missing the 'name' property
+    let updated = false;
+    savedGroups.forEach((group, idx) => {
+      if (!group.name) {
+        group.name = `Group ${idx + 1}`;
+        updated = true;
+      }
+    });
+    if (updated) {
+      await browser.storage.local.set({ savedGroups });
+    }
+
     container.innerHTML = "";
 
     if (savedGroups.length === 0) {
@@ -49,22 +62,90 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Iterate in reverse order so newest group on top
     savedGroups.slice().reverse().forEach((group, index) => {
-      // Container for timestamp + actions - flex with space-between
       const timestampDiv = document.createElement("div");
       timestampDiv.className = "save-timestamp";
-      timestampDiv.style.display = "flex";
-      timestampDiv.style.alignItems = "center";
-      timestampDiv.style.justifyContent = "flex-start"; // align left so timestamp and actions are close
 
+      // Group name input (always on its own line)
+      const nameInput = document.createElement("textarea");
+      nameInput.value = group.name || `Group`;
+      nameInput.className = "group-name-input";
+      nameInput.rows = 1; // Start with 1 row
+      nameInput.spellcheck = false;  // Disable spell check
+      nameInput.autocomplete = "off"; // Also disable autocomplete if desired
+
+      // Auto-resize function for textarea
+      function autoResizeTextarea(textarea) {
+        // Reset height to measure content
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+        
+        // Dynamically adjust width based on content
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = window.getComputedStyle(textarea).fontSize;
+        tempSpan.style.fontFamily = window.getComputedStyle(textarea).fontFamily;
+        tempSpan.style.fontWeight = window.getComputedStyle(textarea).fontWeight;
+        tempSpan.style.whiteSpace = 'pre';
+        tempSpan.textContent = textarea.value || 'Group';
+        document.body.appendChild(tempSpan);
+        
+        const textWidth = tempSpan.offsetWidth;
+        document.body.removeChild(tempSpan);
+        
+        // Calculate container width and available space
+        const container = textarea.closest('.save-timestamp');
+        const containerWidth = container.offsetWidth;
+        const maxWidth = Math.floor(containerWidth * 0.6); // 60% max
+        const minSpaceForMeta = 200; // Space needed for timestamp + actions
+        
+        // Set width: content-based but limited
+        const idealWidth = Math.max(40, textWidth + 20);
+        const availableWidth = containerWidth - minSpaceForMeta - 24; // 24px for gaps
+        const newWidth = Math.min(idealWidth, Math.min(maxWidth, availableWidth));
+        
+        textarea.style.width = newWidth + 'px';
+      }
+
+      nameInput.addEventListener('input', function() {
+        autoResizeTextarea(this);
+      });
+
+      nameInput.addEventListener('blur', async function() {
+        const originalIndex = savedGroups.length - 1 - index;
+        savedGroups[originalIndex].name = this.value;
+        await browser.storage.local.set({ savedGroups });
+      });
+
+      // Prevent Enter key from creating new lines (optional)
+      nameInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          this.blur(); // Save and lose focus
+        }
+      });
+
+      // Initial resize
+      setTimeout(() => autoResizeTextarea(nameInput), 0);
+
+      // Make sure to call autoResizeInput after the timestampDiv is added to DOM:
+      timestampDiv.appendChild(nameInput);
+      container.appendChild(timestampDiv); // Add this before autoResizeInput
+
+      // Meta container (timestamp + actions on second line)
+      const metaContainer = document.createElement("div");
+      metaContainer.className = "group-meta";
+
+      // Timestamp
       const date = new Date(group.timestamp);
-
-      // Left side: timestamp text
       const timeText = document.createElement("span");
       timeText.textContent = `Saved on ${date.toLocaleString()}`;
-      timeText.style.marginRight = "12px";
+      timeText.className = "group-time";
+      metaContainer.appendChild(timeText);
 
-      // Actions container: group links side by side
-      const actionsContainer = document.createElement("span");
+      // Actions container
+      const actionsContainer = document.createElement("div");
+      actionsContainer.className = "group-actions";
 
       // Delete Group link
       const deleteGroupLink = document.createElement("a");
@@ -77,8 +158,9 @@ document.addEventListener("DOMContentLoaded", () => {
           deleteGroup(group.timestamp);
         }
       };
+      actionsContainer.appendChild(deleteGroupLink);
 
-      // Restore All links
+      // Restore All link
       const restoreAllLink = document.createElement("a");
       restoreAllLink.className = "action-link";
       restoreAllLink.href = "#";
@@ -87,16 +169,14 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
         restoreGroup(group.tabs);
       };
-
-      actionsContainer.appendChild(deleteGroupLink);
       actionsContainer.appendChild(restoreAllLink);
 
-      timestampDiv.appendChild(timeText);
-      timestampDiv.appendChild(actionsContainer);
+      metaContainer.appendChild(actionsContainer);
+      timestampDiv.appendChild(metaContainer);
 
       container.appendChild(timestampDiv);
-
-      // Render each tab (same as before)...
+      
+      // Continue with your tabs rendering...
       group.tabs.forEach(tab => {
         const tabDiv = document.createElement("div");
         tabDiv.className = "tab-item";

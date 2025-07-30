@@ -21,9 +21,10 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
         // Get existing saved groups
         const { savedGroups = [] } = await browser.storage.local.get("savedGroups");
 
-        // Add new group with timestamp
+        // Add new group with timestamp and default name
         savedGroups.push({
           timestamp: Date.now(),
+          name: `Group ${savedGroups.length + 1}`,
           tabs: tabData
         });
 
